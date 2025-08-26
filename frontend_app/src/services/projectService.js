@@ -1,5 +1,5 @@
 import { getAuthHeaders } from "./utility";
-const BASE_URL = "http://localhost:8000"; // Change to your backend URL
+import { BASE_URL } from "./constants";
 
 export async function fetchProjects() {
   const res = await fetch(`${BASE_URL}/project/`, {

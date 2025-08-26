@@ -16,8 +16,10 @@ def get_user_business(db=Depends(get_db)):
 
 
 def get_task_business(db=Depends(get_db)):
+    repo = ProjectRepository(db)
+    project_business = ProjectBusiness(repo)
     repo = TaskRepository(db)
-    return TaskBusiness(repo)
+    return TaskBusiness(repo, project_business)
 
 
 def get_project_business(db=Depends(get_db)):

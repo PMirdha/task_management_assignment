@@ -27,7 +27,7 @@ class ProjectBusiness(IProjectBusiness):
             return None, "not_found"
         if project.creator_id != user_id:
             return None, "forbidden"
-        update_data = {k: v for k, v in data.dict().items() if v is not None}
+        update_data = {k: v for k, v in data.model_dump().items() if v is not None}
         updated_project = await self.repo.update(project_id, update_data)
         return updated_project, None
 
@@ -41,3 +41,7 @@ class ProjectBusiness(IProjectBusiness):
         if not deleted:
             return False, "not_found"
         return True, None
+
+    async def is_valid_project(self, project_id: str):
+        project = await self.repo.get_by_id(project_id)
+        return project is not None

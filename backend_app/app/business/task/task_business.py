@@ -1,3 +1,4 @@
+from app.business.project.project_business_interface import IProjectBusiness
 from app.contracts import TaskCreate, TaskUpdate, TaskStatusUpdate
 from app.constants import TaskStatus
 from app.business.task.task_business_interface import ITaskBusiness
@@ -5,16 +6,19 @@ from app.business.task.task_repository_interface import ITaskRepository
 
 
 class TaskBusiness(ITaskBusiness):
-    def __init__(self, repo: ITaskRepository):
+    def __init__(self, repo: ITaskRepository, project_business: IProjectBusiness):
         self.repo = repo
+        self.project_business = project_business
 
     async def create_task(self, data: TaskCreate):
+        if not await self.project_business.is_valid_project(data.project_id):
+            return None, "Invalid project"
         task_data = {
             "project_id": data.project_id,
             "title": data.title,
             "status": data.status,
         }
-        return await self.repo.create(task_data)
+        return await self.repo.create(task_data), None
 
     async def get_tasks(self):
         return await self.repo.get_all()
@@ -32,9 +36,11 @@ class TaskBusiness(ITaskBusiness):
         task = await self.repo.get_by_id(task_id)
         if not task:
             return None
+        if not await self.project_business.is_valid_project(task.project_id):
+            return None
         update_data = {
             k: (v.value if isinstance(v, TaskStatus) else v)
-            for k, v in data.dict().items()
+            for k, v in data.model_dump().items()
             if v is not None
         }
         return await self.repo.update(task_id, update_data)

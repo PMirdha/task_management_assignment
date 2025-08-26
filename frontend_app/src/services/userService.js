@@ -1,4 +1,17 @@
+import { saveToken, getToken, getAuthHeaders } from "./utility";
+
 const BASE_URL = "http://localhost:8000"; // Change to your backend URL
+
+export async function authFetch(url, options = {}) {
+  const headers = {
+    ...(options.headers || {}),
+    ...getAuthHeaders(),
+    "Content-Type": "application/json",
+  };
+  const res = await fetch(url, { ...options, headers });
+  if (!res.ok) throw new Error("API request failed");
+  return res.json();
+}
 
 export async function registerUser({ email, password }) {
   const res = await fetch(`${BASE_URL}/user/register`, {
@@ -17,5 +30,7 @@ export async function loginUser({ email, password }) {
     body: JSON.stringify({ email, password }),
   });
   if (!res.ok) throw new Error("Login failed");
-  return res.json();
+  const data = await res.json();
+  if (data.access_token) saveToken(data.access_token);
+  return data;
 }

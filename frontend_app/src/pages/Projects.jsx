@@ -38,7 +38,11 @@ export default function Projects({ onSelect }) {
     try {
       await deleteProject(id);
       setProjects((prev) => prev.filter((p) => p.id !== id));
-    } catch {}
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message); // Show error detail in toast
+      }
+    }
     setDropdownOpen(null);
   };
 

@@ -71,7 +71,11 @@ export default function Tasks({ project }) {
         status: newStatus,
       });
       setTasks((prev) => [...prev, created]);
-    } catch {}
+    } catch (err) {
+      if (err instanceof Error) {
+        alert(err.message); // Show error detail in alert
+      }
+    }
     setNewDesc("");
     setNewStatus(statusOptions[0]);
     setShowAdd(false);

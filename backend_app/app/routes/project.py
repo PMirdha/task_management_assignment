@@ -1,24 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends
 from app.routes.init_handler import get_project_business
-from app.utils.jwt import verify_token
+from app.utils.auth import get_current_user
 from app.models.project import Project
 from app.contracts import ProjectCreate, ProjectUpdate
 from app.business.project.project_business import ProjectBusiness
 
 router = APIRouter()
-
-
-def get_current_user(token: str = Depends(lambda: None)):
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token"
-        )
-    payload = verify_token(token)
-    if not payload:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
-        )
-    return payload
 
 
 @router.post("/", response_model=Project)

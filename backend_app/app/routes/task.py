@@ -1,25 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends
 from app.routes.init_handler import get_task_business
-from app.utils.jwt import verify_token
+from app.utils.auth import get_current_user
 from app.models.task import Task
 from app.business.task.task_business import TaskBusiness
 from app.contracts import TaskCreate, TaskUpdate, TaskStatusUpdate
-from app.constants import TaskStatus
 
 router = APIRouter()
-
-
-def get_current_user(token: str = Depends(lambda: None)):
-    if not token:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token"
-        )
-    payload = verify_token(token)
-    if not payload:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
-        )
-    return payload
 
 
 @router.post("/", response_model=Task)

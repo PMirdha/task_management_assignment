@@ -1,4 +1,3 @@
-# JWT utility functions
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from app.config import get_config

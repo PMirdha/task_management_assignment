@@ -1,16 +1,16 @@
-version: '3.8'
 services:
   backend:
-    build: .
+    build: backend_app
     container_name: fastapi_app
     ports:
       - "8000:8000"
     depends_on:
       - mongo
+    env_file:
+      - backend_app/.env
     environment:
       - MONGO_URL=mongodb://mongo:27017
-      - MONGO_DB=assignment_db
-      - JWT_SECRET=your_secret_key
+      - MONGO_DB=task_management_db
     networks:
       - appnet
   mongo:
@@ -20,7 +20,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db
+      - ./mongo_data:/data/db
     networks:
       - appnet
   nginx:
@@ -30,6 +30,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./frontend_app/dist:/usr/share/nginx/html:ro
     depends_on:
       - backend
     networks:

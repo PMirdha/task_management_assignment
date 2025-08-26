@@ -19,18 +19,11 @@ async def create_project(
 
 
 @router.get("/", response_model=list[Project])
-async def get_projects(business: ProjectBusiness = Depends(get_project_business)):
-    return await business.get_projects()
-
-
-@router.get("/{project_id}", response_model=Project)
-async def get_project(
-    project_id: str, business: ProjectBusiness = Depends(get_project_business)
+async def get_projects(
+    business: ProjectBusiness = Depends(get_project_business),
+    user=Depends(get_current_user),
 ):
-    project = await business.get_project(project_id)
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
-    return project
+    return await business.get_projects()
 
 
 @router.put("/{project_id}", response_model=Project)

@@ -18,16 +18,10 @@ async def create_task(
 
 
 @router.get("/", response_model=list[Task])
-async def get_tasks(business: TaskBusiness = Depends(get_task_business)):
+async def get_tasks(
+    business: TaskBusiness = Depends(get_task_business), user=Depends(get_current_user)
+):
     return await business.get_tasks()
-
-
-@router.get("/{task_id}", response_model=Task)
-async def get_task(task_id: str, business: TaskBusiness = Depends(get_task_business)):
-    task = await business.get_task(task_id)
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return task
 
 
 @router.patch("/{task_id}/status", response_model=Task)
@@ -54,15 +48,3 @@ async def update_task(
     if not updated_task:
         raise HTTPException(status_code=404, detail="Task not found")
     return updated_task
-
-
-@router.delete("/{task_id}")
-async def delete_task(
-    task_id: str,
-    business: TaskBusiness = Depends(get_task_business),
-    user=Depends(get_current_user),
-):
-    deleted = await business.delete_task(task_id)
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return {"detail": "Task deleted"}
